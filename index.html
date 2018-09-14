@@ -299,6 +299,8 @@
     $scope.import = function () {
       $http.get($scope.gistURL)
         .then(function (res) {
+          //angular.element($0).scope()
+          //phantimjs
           $scope.acedata = res.data;
           $scope.drawClick()
         })
