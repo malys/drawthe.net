@@ -1,4 +1,7 @@
-var drawNotes = function (svg, diagram, notes) {
+var showdown  = require('showdown');
+require('showdown-prettify');
+
+module.exports= function (svg, diagram, notes,d3) {
 
   var converter = new showdown.Converter({extensions: ['prettify']});
   converter.setOption('prefixHeaderId', 'notes-');

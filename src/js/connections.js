@@ -1,4 +1,4 @@
-var drawConnections = function (svg, diagram, connections, icons, notes) {
+module.exports=function (svg, diagram, connections, icons, notes,d3) {
     var connectionLabelFontSize = Math.min(diagram.xBand.bandwidth()/8,diagram.yBand.bandwidth()/8)
     connections.forEach(function(connection,index) {
       var endpoints = connection.endpoints.map( function(device) { return device.split(':')[0]})
@@ -88,13 +88,14 @@ var drawConnections = function (svg, diagram, connections, icons, notes) {
           startOffset = diagram.yBand.bandwidth()/2
         }
         // draw the text for the second node
+        //TODO
         svg.append("text")
           .attr('class', 'connectionLabel')
           .style("fill", function(d) { return connection.color || "orange" })
           .style('font-size',  connectionLabelFontSize + 'px' )
           .attr('dy', connectionLabelFontSize)
           .attr('dx', function(d) {
-            return -startOffset - this.getComputedTextLength() - dxOffset
+            return -startOffset - dxOffset
           })
           .append("textPath")
             .style("text-anchor","end")

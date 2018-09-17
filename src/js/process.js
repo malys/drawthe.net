@@ -1,49 +1,3 @@
-var processEntities = function (svg, diagram, icons) {
-
-  // set some defaults, even though these won't be used for iconss we'll set them anyway
-  var defaults = {
-    xAlign: "left",
-    yAlign: "top",
-    textLocation: "bottomMiddle"
-  }
-
-  var previous = {}
-  for(var key in icons) {
-    icons[key] = Object.assign({}, defaults, icons[key])
-    icons[key].w = icons[key].w || 1
-    icons[key].h = icons[key].h || 1
-    if (!("x" in icons[key])) {
-      icons[key].x = previous.x
-    } else if (icons[key].x.toString().startsWith('+')) {
-      icons[key].x = parseInt(previous.x) + parseInt(icons[key].x.toString().split('+')[1])
-    } else if (icons[key].x.toString().startsWith('-')) {
-      icons[key].x = parseInt(previous.x) - parseInt(icons[key].x.toString().split('-')[1])
-    }
-    icons[key].x1 = diagram.xBand(icons[key].x)
-    if (!("y" in icons[key])) {
-      icons[key].y = previous.y
-    } else if (icons[key].y.toString().startsWith('+')) {
-      icons[key].y = parseInt(previous.y) + parseInt(icons[key].y.toString().split('+')[1])
-    } else if (icons[key].y.toString().startsWith('-')) {
-      icons[key].y = parseInt(previous.y) - parseInt(icons[key].y.toString().split('-')[1])
-    }
-    icons[key].y1 = diagram.yBand(icons[key].y)
-    icons[key].width = diagram.xBand.bandwidth() + ((icons[key].w - 1) * diagram.xBand.step())
-    icons[key].height = diagram.yBand.bandwidth() + ((icons[key].h - 1) * diagram.yBand.step())
-    icons[key].x2 = icons[key].x1 + icons[key].width
-    icons[key].y2 = icons[key].y1 + icons[key].height
-    icons[key].centerX = icons[key].x1 + icons[key].width/2
-    icons[key].centerY = icons[key].y1 + icons[key].height/2
-    icons[key].rx = diagram.xBand.bandwidth() * .05
-    icons[key].ry = diagram.yBand.bandwidth() * .05
-    icons[key].padding = Math.min(diagram.yBand.bandwidth() * .05, diagram.xBand.bandwidth() * .05)
-    icons[key].iconPaddingX = parseFloat("5%")/100
-    icons[key].iconPaddingY = parseFloat("5%")/100
-    previous = icons[key]
-  }
-  return icons
-}
-
 function clone(hash) {
   var json = JSON.stringify(hash);
   var obj = JSON.parse(json);
@@ -93,7 +47,56 @@ function dive(connection, icons, groups) {
   })
   return additionalConnections
 }
-var processConnections = function(connections, groups, icons) {
+
+
+
+module.exports={
+ entities:  function (svg, diagram, icons) {
+
+  // set some defaults, even though these won't be used for iconss we'll set them anyway
+  var defaults = {
+    xAlign: "left",
+    yAlign: "top",
+    textLocation: "bottomMiddle"
+  }
+
+  var previous = {}
+  for(var key in icons) {
+    icons[key] = Object.assign({}, defaults, icons[key])
+    icons[key].w = icons[key].w || 1
+    icons[key].h = icons[key].h || 1
+    if (!("x" in icons[key])) {
+      icons[key].x = previous.x
+    } else if (icons[key].x.toString().startsWith('+')) {
+      icons[key].x = parseInt(previous.x) + parseInt(icons[key].x.toString().split('+')[1])
+    } else if (icons[key].x.toString().startsWith('-')) {
+      icons[key].x = parseInt(previous.x) - parseInt(icons[key].x.toString().split('-')[1])
+    }
+    icons[key].x1 = diagram.xBand(icons[key].x)
+    if (!("y" in icons[key])) {
+      icons[key].y = previous.y
+    } else if (icons[key].y.toString().startsWith('+')) {
+      icons[key].y = parseInt(previous.y) + parseInt(icons[key].y.toString().split('+')[1])
+    } else if (icons[key].y.toString().startsWith('-')) {
+      icons[key].y = parseInt(previous.y) - parseInt(icons[key].y.toString().split('-')[1])
+    }
+    icons[key].y1 = diagram.yBand(icons[key].y)
+    icons[key].width = diagram.xBand.bandwidth() + ((icons[key].w - 1) * diagram.xBand.step())
+    icons[key].height = diagram.yBand.bandwidth() + ((icons[key].h - 1) * diagram.yBand.step())
+    icons[key].x2 = icons[key].x1 + icons[key].width
+    icons[key].y2 = icons[key].y1 + icons[key].height
+    icons[key].centerX = icons[key].x1 + icons[key].width/2
+    icons[key].centerY = icons[key].y1 + icons[key].height/2
+    icons[key].rx = diagram.xBand.bandwidth() * .05
+    icons[key].ry = diagram.yBand.bandwidth() * .05
+    icons[key].padding = Math.min(diagram.yBand.bandwidth() * .05, diagram.xBand.bandwidth() * .05)
+    icons[key].iconPaddingX = parseFloat("5%")/100
+    icons[key].iconPaddingY = parseFloat("5%")/100
+    previous = icons[key]
+  }
+  return icons
+}, 
+connections : function(connections, groups, icons) {
   var additionalConnections = []
   for (var i = connections.length - 1; i >= 0; i--) {
     endpoints = connections[i].endpoints.map( function(device) { return device.split(':')[0]})
@@ -104,9 +107,8 @@ var processConnections = function(connections, groups, icons) {
     } //if
   }
   return connections.concat(additionalConnections)
-}
-
-var processGroups = function(groups, diagram, icons) {
+},
+groups : function(groups, diagram, icons,d3) {
   for (var key in groups) {
     groups[key].maxDepth = 1
     var additionalMembers = []
@@ -132,10 +134,8 @@ var processGroups = function(groups, diagram, icons) {
     groups[key].fontSize = Math.min(xpad/groups[key].maxDepth,ypad/groups[key].maxDepth) - 2
   }
   return groups
-}
-
-
-function textPositions(x1, y1, x2, y2, fontSize) {
+},
+textPositions:function(x1, y1, x2, y2, fontSize) {
   var positions = {
     topLeft: { x: x1 + (fontSize/4), y: y1 + (fontSize/2), textAnchor: "start", rotate: 0 },
     topMiddle: { x: (x2 - x1)/2 + x1 , y: y1 + (fontSize/2), textAnchor: "middle", rotate: 0 },
@@ -157,21 +157,4 @@ function textPositions(x1, y1, x2, y2, fontSize) {
   }
   return positions
 }
-
-
-
-
-// https://github.com/wbkd/d3-extended
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function(){
-    this.parentNode.appendChild(this);
-  });
-};
-d3.selection.prototype.moveToBack = function() {
-    return this.each(function() {
-        var firstChild = this.parentNode.firstChild;
-        if (firstChild) {
-            this.parentNode.insertBefore(this, firstChild);
-        }
-    });
-};
+}

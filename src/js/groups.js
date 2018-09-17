@@ -1,4 +1,4 @@
-var drawGroups = function (svg, diagram, groups, icons) {
+module.exports=function (svg, diagram, groups, icons,textPositions) {
     for (var group in groups) {
       svg.append("rect")
          .attr("x", groups[group].x1)

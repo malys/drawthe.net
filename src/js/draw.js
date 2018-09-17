@@ -1,4 +1,4 @@
-function draw(doc) {
+module.exports= function() {
   // set the drawing defaults
   var drawingDefaults = {
     fill: "orange",

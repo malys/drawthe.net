@@ -1,7 +1,7 @@
-var drawTitle = function (svg, drawing, title) {
+module.exports=function (svg, drawing, title) {
   if (title.heightPercentage > 0) {
     // title bar
-    axisPadding = 20
+    axisPadding = 0
     title.x1 = drawing.x - axisPadding
     title.y1 = drawing.height + drawing.y + axisPadding
     title.x2 = drawing.x + drawing.width + axisPadding

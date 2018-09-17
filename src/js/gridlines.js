@@ -1,4 +1,4 @@
-var drawGridLines = function (svg, drawing) {
+module.exports=function (svg, drawing,d3) {
   if (drawing.gridLines) {
     function make_x_gridlines() {
       return d3.axisBottom(drawing.xBand)
