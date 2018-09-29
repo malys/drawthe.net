@@ -2,17 +2,21 @@ const request = require('superagent');
 const fs = require('fs');
 var doc = fs.readFileSync('test.yaml', 'utf8')
 
+//curl -F 'data=@test.yaml' http://localhost:3000/draw
+
 //console.log(doc)
 request.post('http://localhost:3000/draw')
-.set('Content-Type', 'application/text')
 .send(doc)
-.end((err, res) => {
-    if (err) { return console.log(err); }
-    //console.log(res.body.url);
+.type('application/text')
+.set('Accept', 'text/html')
+//.buffer(true).parse(request.parse.image)
+.then(res => {
+    // res.body, res.headers, res.status
+    console.log(res.text);
     //console.log(res.body.explanation);
 
-    fs.writeFile('moi.html', res.body, function(err) {
-        console.log('Error: ' + err);
-        });
-  });
-
+    fs.writeFileSync('./moi.html', res.text)
+ })
+ .catch(err => {
+    console.log(err);
+ });

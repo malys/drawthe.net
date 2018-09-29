@@ -55,7 +55,7 @@ var titleDefaults = {
   logoFill: "orange"
 }
 
-app.use(bodyParser());
+app.use(bodyParser.text({ type: 'application/text' }))
 
 app.post('/draw',(req, res) => {
   var d3n = new D3Node({
@@ -63,7 +63,7 @@ app.post('/draw',(req, res) => {
     defaultStyle
   });
 
-  console.log(req.body)
+  //console.log(req.body)
   
   var d3 = d3n.d3;
   d3.selection.prototype.moveToFront = function () {
@@ -157,7 +157,8 @@ app.post('/draw',(req, res) => {
   require('./src/js/icons.js')(svg, diagram, icons, diagram.iconTextRatio, d3, d3n, process.textPositions)
   require('./src/js/notes.js')(svg, diagram, notes, d3)
 
-  res.set('Content-Type', 'image/png');
+  res.set('Content-Type', 'text/html');
+  console.log(d3n.html());
   res.send(d3n.html())//.chartHTML() );
 
 });
