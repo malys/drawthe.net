@@ -7,6 +7,7 @@ const express = require('express');
 const yaml = require('js-yaml')
 const app = express();
 const bodyParser = require('body-parser')
+const debug = require('debug')('drawthenet');
 
 //https://github.com/LintangWisesa/OpeNode_Deploy_Example
 
@@ -56,8 +57,9 @@ var titleDefaults = {
   logoFill: "orange"
 }
 
+var port = process.env.PORT || 3000; 
+app.set('port', port);
 app.use(bodyParser.text({ type: 'application/text' }))
-
 app.use(express.static('./'))
 
 app.get('/', function(req, res) {
@@ -71,7 +73,7 @@ app.post('/draw',(req, res) => {
     defaultStyle
   });
 
-  console.log(req.body)
+  debug(req.body)
   
   var d3 = d3n.d3;
   d3.selection.prototype.moveToFront = function () {
@@ -166,13 +168,9 @@ app.post('/draw',(req, res) => {
   require('./src/js/notes.js')(svg, diagram, notes, d3)
 
   res.set('Content-Type', 'application/svg+xml');
-  console.log(d3n.svgString())
+  debug(d3n.svgString())
   res.send( d3n.svgString())//.html() );
 
 });
 
-app.listen(3000);
-
-
-
-//output('./output', d3n);
+app.listen(port);
