@@ -17,6 +17,7 @@
     "body-parser": "^1.18.3",
     "bootstrap": "^3.3.7",
     "code-prettify": "^0.1.0",
+    "compression": "^1.7.3",
     "d3": "^4.2.4",
     "d3-node": "^2.0.0",
     "debug": "^4.0.1",

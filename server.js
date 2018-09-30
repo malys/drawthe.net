@@ -7,6 +7,7 @@ const yaml = require('js-yaml')
 const app = express();
 const bodyParser = require('body-parser')
 const debug = require('debug')('drawthenet');
+var compression = require('compression')
 
 //https://github.com/LintangWisesa/OpeNode_Deploy_Example
 
@@ -56,12 +57,13 @@ var titleDefaults = {
   logoFill: "orange"
 }
 
-var port = Number(process.env.PORT || '80');
+var port = Number(process.env.PORT || '3000');
 app.set('port', port);
+app.use(compression());
 app.use(bodyParser.text({
   type: 'application/text'
 }))
-app.use(express.static('./'))
+app.use(express.static('./'));
 
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/index.html'));
