@@ -43,3 +43,5 @@ jspm_packages
 node_modules*
 
 google.txt
+/moi.html
+/moi.svg

@@ -1,4 +1,5 @@
 const D3Node = require('d3-node');
+const path = require('path');
 const d3Module = require('d3'); // v3.5.17
 const process = require('./src/js/process.js');
 const output = require('d3node-output');
@@ -7,7 +8,7 @@ const yaml = require('js-yaml')
 const app = express();
 const bodyParser = require('body-parser')
 
-
+//https://github.com/LintangWisesa/OpeNode_Deploy_Example
 
 const defaultStyle = `
 .border{
@@ -57,13 +58,20 @@ var titleDefaults = {
 
 app.use(bodyParser.text({ type: 'application/text' }))
 
+app.use(express.static('./'))
+
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname + '/index.html'));
+});
+
+
 app.post('/draw',(req, res) => {
   var d3n = new D3Node({
     d3Module,
     defaultStyle
   });
 
-  //console.log(req.body)
+  console.log(req.body)
   
   var d3 = d3n.d3;
   d3.selection.prototype.moveToFront = function () {
@@ -157,9 +165,9 @@ app.post('/draw',(req, res) => {
   require('./src/js/icons.js')(svg, diagram, icons, diagram.iconTextRatio, d3, d3n, process.textPositions)
   require('./src/js/notes.js')(svg, diagram, notes, d3)
 
-  res.set('Content-Type', 'text/html');
-  console.log(d3n.html());
-  res.send(d3n.html())//.chartHTML() );
+  res.set('Content-Type', 'application/svg+xml');
+  console.log(d3n.svgString())
+  res.send( d3n.svgString())//.html() );
 
 });
 
