@@ -1,8 +1,7 @@
 const D3Node = require('d3-node');
 const path = require('path');
 const d3Module = require('d3'); // v3.5.17
-const process = require('./src/js/process.js');
-const output = require('d3node-output');
+const proc = require('./src/js/process.js');
 const express = require('express');
 const yaml = require('js-yaml')
 const app = express();
@@ -57,24 +56,26 @@ var titleDefaults = {
   logoFill: "orange"
 }
 
-var port = process.env.PORT || 3000; 
+var port = Number(process.env.PORT || '80');
 app.set('port', port);
-app.use(bodyParser.text({ type: 'application/text' }))
+app.use(bodyParser.text({
+  type: 'application/text'
+}))
 app.use(express.static('./'))
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/index.html'));
 });
 
 
-app.post('/draw',(req, res) => {
+app.post('/draw', (req, res) => {
   var d3n = new D3Node({
     d3Module,
     defaultStyle
   });
 
   debug(req.body)
-  
+
   var d3 = d3n.d3;
   d3.selection.prototype.moveToFront = function () {
     return this.each(function () {
@@ -89,7 +90,7 @@ app.post('/draw',(req, res) => {
       }
     });
   };
-  
+
   var doc = yaml.safeLoad(req.body);
   // incase there are none
   var connections = doc.connections || [];
@@ -154,23 +155,54 @@ app.post('/draw',(req, res) => {
     .rangeRound([diagram.y, diagram.height + diagram.y])
     .paddingInner(diagram.gridPaddingInner);
 
-  notes = process.entities(svg, diagram, notes)
-  icons = process.entities(svg, diagram, icons)
-  connections = process.connections(connections, groups, icons)
-  groups = process.groups(groups, diagram, icons, d3)
+  notes = proc.entities(svg, diagram, notes)
+  icons = proc.entities(svg, diagram, icons)
+  connections = proc.connections(connections, groups, icons)
+  groups = proc.groups(groups, diagram, icons, d3)
 
   // draw all the things
   require('./src/js/title.js')(svg, diagram, title)
   require('./src/js/gridlines.js')(svg, diagram, d3)
-  require('./src/js/groups.js')(svg, diagram, groups, icons, process.textPositions)
+  require('./src/js/groups.js')(svg, diagram, groups, icons, proc.textPositions)
   require('./src/js/connections.js')(svg, diagram, connections, icons, notes, d3)
-  require('./src/js/icons.js')(svg, diagram, icons, diagram.iconTextRatio, d3, d3n, process.textPositions)
+  require('./src/js/icons.js')(svg, diagram, icons, diagram.iconTextRatio, d3, d3n, proc.textPositions)
   require('./src/js/notes.js')(svg, diagram, notes, d3)
 
   res.set('Content-Type', 'application/svg+xml');
   debug(d3n.svgString())
-  res.send( d3n.svgString())//.html() );
+  res.send(d3n.svgString()) //.html() );
 
 });
 
 app.listen(port);
+app.on('error', (error) => {
+    if (error.syscall !== 'listen') {
+      throw error;
+    }
+
+    var bind = typeof port === 'string' ?
+      'Pipe ' + port :
+      'Port ' + port
+
+    switch (error.code) {
+      case 'EACCES':
+        console.error(bind + ' requires elevated privileges');
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.error(bind + ' is already in use');
+        process.exit(1);
+        break;
+      default:
+        throw error;
+    }
+  }
+
+);
+app.on('listening', () => {
+  var addr = server.address();
+  var bind = typeof addr === 'string' ?
+    'pipe ' + addr :
+    'port ' + addr.port;
+  debug('Listening on ' + bind);
+});

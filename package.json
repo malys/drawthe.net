@@ -19,7 +19,6 @@
     "code-prettify": "^0.1.0",
     "d3": "^4.2.4",
     "d3-node": "^2.0.0",
-    "d3node-output": "^1.0.2",
     "debug": "^4.0.1",
     "express": "^4.16.3",
     "fast-xml-parser": "^3.12.5",
